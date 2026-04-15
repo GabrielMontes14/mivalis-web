@@ -8,7 +8,8 @@ const app = {
     view: 'home',
     container: document.getElementById('app-root'),
 
-    init: () => {
+    init: async () => {
+        await DataService.preload();
         app.updateCartCount();
         app.updateAuthNav();
         app.navigate('home');

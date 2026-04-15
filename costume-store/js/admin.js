@@ -11,13 +11,14 @@ window.admin = {
     /**
      * Initialize the admin panel
      */
-    init: () => {
-        // DOM is ready, safe to get container
+    init: async () => {
         window.admin.container = document.getElementById('admin-content');
         if (!window.admin.container) {
-            console.error("Admin container not found! Check HTML ID 'admin-content'.");
+            console.error("Admin container not found!");
             return;
         }
+        window.admin.container.innerHTML = '<div style="text-align:center;padding:3rem;">Cargando datos...</div>';
+        await DataService.preload();
         window.admin.navigate('dashboard');
     },
 
@@ -135,8 +136,9 @@ window.admin = {
         `;
     },
 
-    renderOrders: () => {
-        const orders = DataService.getOrders();
+    renderOrders: async () => {
+        window.admin.container.innerHTML = '<div style="text-align:center;padding:2rem;">Cargando pedidos...</div>';
+        const orders = await DataService.getOrdersAsync({ allOrders: true });
         window.admin.container.innerHTML = `
             <h1>Gestionar Pedidos</h1>
             ${window.admin.buildOrderTable(orders)}
@@ -283,17 +285,10 @@ window.admin = {
         }
     },
 
-    updateOrderStatus: (id, status) => {
-        const orders = DataService.getOrders();
-        const orderIndex = orders.findIndex(o => o.id === id);
-        if (orderIndex !== -1) {
-            orders[orderIndex].status = status;
-            // Persist order update (Currently using localStorage direct as DataService.updateOrder exists but is slightly different signature? Let's check DataService.updateOrder)
-            // DataService.updateOrder(id, {status}) is available, let's use it properly if possible, but manual save is safer given scope
-            localStorage.setItem('costume_store_orders', JSON.stringify(orders));
-            window.admin.renderDashboard();
-            if (window.admin.view === 'orders') window.admin.renderOrders();
-        }
+    updateOrderStatus: async (id, status) => {
+        await DataService.updateOrderAsync(id, { status });
+        window.admin.renderDashboard();
+        if (window.admin.view === 'orders') window.admin.renderOrders();
     }
 };
 
