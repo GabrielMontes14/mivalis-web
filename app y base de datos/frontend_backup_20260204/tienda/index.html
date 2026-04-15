@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bodega Mayorista</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="/tienda-static/css/tienda.min.css">
+    <link rel="stylesheet" href="/tienda-static/css/index.css">
+</head>
+
+<body>
+    <div class="zone-selector">
+        <!-- Header -->
+        <header class="zone-selector-header">
+            <img src="/tienda-static/img/logo.png" alt="Bodega Mayorista" class="header-logo">
+            <h1>Bodega Mayorista</h1>
+        </header>
+
+        <!-- Content Cleared as Requested -->
+        <main style="min-height: 50vh; display: flex; align-items: center; justify-content: center; color: white;">
+            <!-- Empty State -->
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer-anim">
+            <p>© 2026 Bodega Mayorista</p>
+        </footer>
+    </div>
+
+    <!-- Essential Scripts -->
+    <script src="/tienda-static/js/index.js" defer></script>
+    <script src="/tienda-static/js/tienda.js?v=reset" defer></script>
+
+    <script>
+        // Minimal setup to prevent broken auth
+        function checkLoginStatus() {
+            const token = localStorage.getItem('customer_token');
+            if (!token) {
+                // Optional: ensure guest state
+            }
+        }
+        document.addEventListener('DOMContentLoaded', checkLoginStatus);
+    </script>
+</body>
+
+</html>

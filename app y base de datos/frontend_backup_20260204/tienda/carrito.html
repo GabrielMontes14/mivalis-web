@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Revisa tu carrito de compras - Bodega Mayorista">
+    <title>Carrito - Bodega Mayorista</title>
+    <link rel="icon" type="image/png" href="/tienda-static/favicon.png">
+    <link rel="apple-touch-icon" href="/tienda-static/favicon-192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/tienda-static/css/tienda.min.css?v=4">
+    <link rel="stylesheet" href="/tienda-static/css/carrito.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="zone-header">
+        <button class="menu-toggle" id="mobile-menu-toggle" aria-label="Abrir menú">☰</button>
+        <a href="/tienda/index.html" class="logo">
+            <span class="desktop-only">🏪</span>
+            <img class="mobile-only" src="/tienda-static/img/logo.png" alt="Logo"
+                style="width: 32px; height: 32px; border-radius: 50%; display:none;">
+            <span>Bodega Mayorista</span>
+        </a>
+        <nav class="zone-nav" id="zone-nav">
+            <button class="close-menu" id="close-menu-btn" aria-label="Cerrar menú">✕</button>
+            <a href="/tienda/index.html">Zonas</a>
+            <a href="/tienda/catalogo.html">Catálogo</a>
+            <a href="/tienda/carrito.html" class="active">Carrito</a>
+            <a href="/tienda/login.html" class="mobile-only" id="mobile-auth-link">Mi Cuenta</a>
+        </nav>
+        <div class="zone-actions">
+            <a href="/tienda/login.html" title="Mi Cuenta" class="desktop-only" id="desktop-auth-link">👤</a>
+        </div>
+    </header>
+    <div class="menu-overlay" id="menu-overlay"></div>
+
+    <!-- Cart Content -->
+    <div class="cart-container">
+        <h1 style="font-size: 2rem; margin-bottom: 30px; color: var(--text-dark);">🛒 Mi Carrito</h1>
+
+        <div id="cart-items">
+            <!-- Cart items loaded dynamically -->
+        </div>
+
+        <div id="cart-summary" class="cart-summary" style="display: none;">
+            <div class="total">
+                <span>Total:</span>
+                <span id="cart-total">$0.00</span>
+            </div>
+            <p style="font-size: 0.9rem; color: var(--text-light); margin-bottom: 20px;">
+                * Los precios mayoristas se aplican según cantidad
+            </p>
+            <button onclick="goToCheckout()" class="checkout-btn" style="width: 100%; cursor: pointer; border: none;">
+                Proceder al Pago →
+            </button>
+        </div>
+
+        <div id="empty-cart" style="display: none; text-align: center; padding: 60px 20px;">
+            <p style="font-size: 3rem; margin-bottom: 20px;">🛒</p>
+            <h2 style="color: var(--text-dark); margin-bottom: 10px;">Tu carrito está vacío</h2>
+            <p style="color: var(--text-light); margin-bottom: 30px;">Agrega productos de nuestras zonas</p>
+            <a href="/tienda/index.html" class="btn-primary" style="display: inline-block; text-decoration: none;">
+                Ver Zonas
+            </a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="zone-footer">
+        <p>© 2026 Bodega Mayorista - Tu Mayorista de Tecnología</p>
+    </footer>
+
+<<<<<<< HEAD
+    <script>
+        function getCart() {
+            return JSON.parse(localStorage.getItem('bodega_cart') || '[]');
+        }
+
+        function saveCart(cart) {
+            localStorage.setItem('bodega_cart', JSON.stringify(cart));
+            renderCart();
+        }
+
+        function renderCart() {
+            const cart = getCart();
+            const itemsContainer = document.getElementById('cart-items');
+            const summaryContainer = document.getElementById('cart-summary');
+            const emptyContainer = document.getElementById('empty-cart');
+
+            if (cart.length === 0) {
+                itemsContainer.innerHTML = '';
+                summaryContainer.style.display = 'none';
+                emptyContainer.style.display = 'block';
+                return;
+            }
+
+            emptyContainer.style.display = 'none';
+            summaryContainer.style.display = 'block';
+
+            let total = 0;
+            itemsContainer.innerHTML = cart.map(item => {
+                const subtotal = item.price * item.quantity;
+                total += subtotal;
+                return `
+                    <div class="cart-item">
+                        <img src="${item.image_url || getPlaceholderImage(item.category_name)}" alt="${item.name}">
+                        <div class="cart-item-info">
+                            <h3>${item.name}</h3>
+                            <p class="price">$${formatPrice(item.price)} c/u</p>
+                            <p style="color: var(--text-light); font-size: 0.9rem;">Subtotal: $${formatPrice(subtotal)}</p>
+                        </div>
+                        <div class="cart-item-controls">
+                            <button class="qty-btn" onclick="updateQuantity(${item.id}, -1)">−</button>
+                            <input type="number" 
+                                   value="${item.quantity}" 
+                                   min="1" 
+                                   onchange="setQuantity(${item.id}, this.value)"
+                                   class="qty-input">
+                            <button class="qty-btn" onclick="updateQuantity(${item.id}, 1)">+</button>
+                            <button class="qty-btn" onclick="removeItem(${item.id})" style="margin-left: 10px; color: #ef4444;">✕</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('cart-total').textContent = `$${formatPrice(total)}`;
+        }
+
+        function updateQuantity(id, delta) {
+            const cart = getCart();
+            const item = cart.find(i => i.id === id);
+
+            if (item) {
+                item.quantity += delta;
+                if (item.quantity <= 0) {
+                    removeItem(id);
+                    return;
+                }
+            }
+
+            saveCart(cart);
+        }
+
+        function setQuantity(id, value) {
+            const qty = parseInt(value);
+            if (isNaN(qty) || qty < 1) {
+                renderCart(); // Reset to current valid value
+                return;
+            }
+
+            const cart = getCart();
+            const item = cart.find(i => i.id === id);
+
+            if (item) {
+                item.quantity = qty;
+                saveCart(cart);
+            }
+        }
+
+        function removeItem(id) {
+            const cart = getCart().filter(i => i.id !== id);
+            saveCart(cart);
+        }
+
+        function formatPrice(price) {
+            return parseFloat(price).toLocaleString('es-CO', { maximumFractionDigits: 0 });
+        }
+
+        function goToCheckout() {
+            window.location.href = '/tienda/checkout.html';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', renderCart);
+
+        // ============================================
+        // Theme Toggle (Dark/Light Mode)
+        // ============================================
+        const THEME_STORAGE_KEY = 'bodega_theme';
+
+        function initTheme() {
+            const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            } else if (prefersDark) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem(THEME_STORAGE_KEY, newTheme);
+        }
+
+        initTheme();
+    </script>
+
+=======
+>>>>>>> 43f9ece (Optimize frontend/backend, implement advanced admin search, and fix imports)
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Cambiar tema">
+        <span class="icon-moon">🌙</span>
+        <span class="icon-sun">☀️</span>
+    </button>
+
+    <script src="/tienda-static/js/carrito.js" defer></script>
+</body>
+
+</html>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Chat - Oceanman</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0a0a0f;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 480px;
+            background: #12121a;
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-header {
+            background: #1a1a24;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 12px;
+        }
+
+        .header-info h2 {
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .header-info p {
+            margin: 2px 0 0;
+            font-size: 0.75rem;
+            color: #34d399;
+        }
+
+        .messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+        .message.bot {
+            background: #1f1f2e;
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+        }
+
+        .message.user {
+            background: #6366f1;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+
+        .message.system {
+            align-self: center;
+            background: rgba(255, 0, 0, 0.1);
+            color: #f87171;
+            border: 1px solid rgba(248, 113, 113, 0.2);
+            font-size: 0.8rem;
+            text-align: center;
+        }
+
+        .typing {
+            font-size: 0.8rem;
+            color: #9ca3af;
+            padding-left: 14px;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        .input-area {
+            background: #1a1a24;
+            padding: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-area input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 10px 16px;
+            color: #fff;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .input-area input:focus {
+            border-color: #6366f1;
+        }
+
+        .send-btn {
+            background: #6366f1;
+            color: #fff;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .send-btn:hover {
+            background: #4f46e5;
+        }
+
+        /* Config Panel */
+        .config-panel {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            background: #1a1a24;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 250px;
+        }
+
+        .config-panel label {
+            display: block;
+            font-size: 0.8rem;
+            color: #9ca3af;
+            margin-bottom: 6px;
+        }
+
+        .config-panel input {
+            width: 100%;
+            box-sizing: border-box;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 8px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+        }
+
+        @media (max-width: 800px) {
+            .config-panel {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="avatar">🤖</div>
+            <div class="header-info">
+                <h2>FixBot4</h2>
+                <p>En línea</p>
+            </div>
+        </div>
+
+        <div class="messages" id="chat">
+            <div class="message bot">¡Hola! Soy FixBot4. Escribe cualquier mensaje para probar cómo respondo y cómo el
+                dashboard captura tus datos como nuevo Lead.</div>
+        </div>
+        <div class="typing" id="typing">Escribiendo...</div>
+
+        <form class="input-area" id="chat-form">
+            <input type="text" id="msg-input" placeholder="Escribe un mensaje..." autocomplete="off">
+            <button type="submit" class="send-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+            </button>
+        </form>
+    </div>
+
+    <div class="config-panel">
+        <h3 style="margin-top:0; font-size:0.9rem;">Configuración de Lead</h3>
+        <label>Teléfono Simulado</label>
+        <input type="text" id="cfg-phone" value="573210009999">
+        <label>Nombre de Usuario</label>
+        <input type="text" id="cfg-name" value="Test Lead">
+        <label>Webhook URL N8n</label>
+        <input type="text" id="cfg-url" value="http://localhost:5678/webhook/agent-dfd19ad9-5ca4-4db4-a48a-aa7a178e13aa"
+            style="font-size:10px;">
+    </div>
+
+    <script>
+        const form = document.getElementById('chat-form');
+        const input = document.getElementById('msg-input');
+        const chat = document.getElementById('chat');
+        const typing = document.getElementById('typing');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const text = input.value.trim();
+            if (!text) return;
+
+            // Add user message
+            addMsg(text, 'user');
+            input.value = '';
+            typing.style.display = 'block';
+            chat.scrollTop = chat.scrollHeight;
+
+            const url = document.getElementById('cfg-url').value;
+            const payload = {
+                telefono: document.getElementById('cfg-phone').value,
+                nombre: document.getElementById('cfg-name').value,
+                mensaje: text
+            };
+
+            try {
+                // We use standard fetch. Note: CORS issues bypass natively if n8n doesn't strictly block headers 
+                // However, N8N webhooks usually allow * origins by default for POST requests
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+                typing.style.display = 'none';
+
+                let botResponse = "Mensaje procesado (sin texto de respuesta)";
+                if (Array.isArray(data) && data.length > 0 && data[0].response) {
+                    botResponse = data[0].response;
+                } else if (data.response) {
+                    botResponse = data.response;
+                } else if (typeof data === 'string') {
+                    botResponse = data;
+                } else {
+                    botResponse = JSON.stringify(data);
+                }
+
+                addMsg(botResponse, 'bot');
+            } catch (err) {
+                typing.style.display = 'none';
+                addMsg(`Error de conexión con N8n: ${err.message}. Revisa si N8n está activo y si el CORS permite la petición (pueden requerirse llamadas a través de backend).`, 'system');
+            }
+        });
+
+        function addMsg(text, type) {
+            const div = document.createElement('div');
+            div.className = `message ${type}`;
+            div.innerHTML = text.replace(/\n/g, '<br>');
+            chat.appendChild(div);
+            // Auto scroll
+            requestAnimationFrame(() => chat.scrollTop = chat.scrollHeight);
+        }
+    </script>
+</body>
+
+</html>

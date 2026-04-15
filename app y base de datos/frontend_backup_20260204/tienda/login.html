@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Inicia sesión o crea tu cuenta mayorista en Bodega Mayorista">
+    <title>Iniciar Sesión - Bodega Mayorista</title>
+    <link rel="icon" type="image/png" href="/tienda-static/favicon.png">
+    <link rel="apple-touch-icon" href="/tienda-static/favicon-192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<<<<<<< HEAD
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #0f0f23 100%);
+            overflow-y: auto;
+            /* Allow vertical scrolling */
+            overflow-x: hidden;
+        }
+
+        /* Panel izquierdo - Branding */
+        .brand-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .brand-panel::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.5;
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 0.8;
+            }
+        }
+
+        .brand-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            color: white;
+        }
+
+        .brand-logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .brand-logo img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            filter: drop-shadow(0 5px 15px rgba(255, 107, 53, 0.4));
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        .brand-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #fff 0%, #a0a0ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .brand-subtitle {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.6);
+            max-width: 300px;
+        }
+
+        .zones-preview {
+            display: flex;
+            gap: 15px;
+            margin-top: 40px;
+        }
+
+        .zone-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            cursor: default;
+            overflow: hidden;
+            padding: 5px;
+        }
+
+        .zone-icon img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .zone-icon:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        /* Panel derecho - Formulario */
+        .form-panel {
+            width: 500px;
+            background: rgba(255, 255, 255, 0.98);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 60px;
+            position: relative;
+        }
+
+        .form-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+        }
+
+        .form-header {
+            margin-bottom: 40px;
+        }
+
+        .form-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 8px;
+        }
+
+        .form-header p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        /* Tabs */
+        .form-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 14px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover {
+            border-color: #6366f1;
+            color: #6366f1;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            border-color: transparent;
+            color: white;
+        }
+
+        /* Form */
+        .form-content {
+            display: none;
+        }
+
+        .form-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: #9ca3af;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 25px 0;
+            color: #9ca3af;
+            font-size: 0.85rem;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e5e7eb;
+        }
+
+        .divider span {
+            padding: 0 15px;
+        }
+
+        .back-link {
+            text-align: center;
+            color: #6366f1;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .error-message {
+            background: #fef2f2;
+            color: #dc2626;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .success-message {
+            background: #f0fdf4;
+            color: #16a34a;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            body {
+                flex-direction: column;
+                min-height: auto;
+                /* Allow body to grow with content */
+                overflow-y: auto;
+            }
+
+            .brand-panel {
+                padding: 40px 20px;
+                min-height: 200px;
+            }
+
+            .brand-title {
+                font-size: 1.8rem;
+            }
+
+            .form-panel {
+                width: 100%;
+                padding: 40px 25px;
+            }
+
+            .form-panel::before {
+                display: none;
+            }
+        }
+    </style>
+=======
+    <link rel="stylesheet" href="/tienda-static/css/login.css">
+>>>>>>> 43f9ece (Optimize frontend/backend, implement advanced admin search, and fix imports)
+</head>
+
+<body>
+    <!-- Panel Branding -->
+    <div class="brand-panel">
+        <div class="brand-content">
+            <div class="brand-logo">
+                <img src="/tienda-static/img/logo.png" alt="Bodega Mayorista">
+            </div>
+            <h1 class="brand-title">Bodega Mayorista</h1>
+            <p class="brand-subtitle">Accede a precios exclusivos para mayoristas en tecnología</p>
+            <div class="zones-preview">
+                <div class="zone-icon"><img src="/tienda-static/img/zone_apple.png" alt="Apple"></div>
+                <div class="zone-icon"><img src="/tienda-static/img/zone_android.png" alt="Android"></div>
+                <div class="zone-icon"><img src="/tienda-static/img/zone_cacharros.png" alt="Cacharros"></div>
+                <div class="zone-icon"><img src="/tienda-static/img/zone_accesorios.png" alt="Accesorios"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel Formulario -->
+    <div class="form-panel">
+        <div class="form-header">
+            <h1>Bienvenido</h1>
+            <p>Inicia sesión o crea tu cuenta mayorista</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="form-tabs">
+            <button type="button" class="tab-btn active" onclick="showTab('login')">Iniciar Sesión</button>
+            <button type="button" class="tab-btn" onclick="showTab('register')">Registrarse</button>
+        </div>
+
+        <!-- Mensajes -->
+        <div class="error-message" id="error-msg"></div>
+        <div class="success-message" id="success-msg"></div>
+
+        <!-- Login Form -->
+        <form id="login-form" class="form-content active" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label for="login-email">Correo electrónico</label>
+                <input type="email" id="login-email" placeholder="tu@empresa.com" required>
+            </div>
+            <div class="form-group">
+                <label for="login-password">Contraseña</label>
+                <input type="password" id="login-password" placeholder="••••••••" required>
+            </div>
+            <a href="#" onclick="showForgotPassword(); return false;"
+                style="display: block; text-align: right; color: #6366f1; font-size: 0.9rem; margin-bottom: 15px; text-decoration: none;">¿Olvidaste
+                tu contraseña?</a>
+            <button type="submit" class="submit-btn">Iniciar Sesión</button>
+        </form>
+
+        <!-- Forgot Password Form (Hidden by default) -->
+        <form id="forgot-form" class="form-content" onsubmit="handleForgotPassword(event)">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <span style="font-size: 3rem;">🔐</span>
+                <h2 style="margin-top: 10px; color: #1f2937;">Recuperar Contraseña</h2>
+                <p style="color: #6b7280; font-size: 0.9rem;">Ingresa tu correo y te enviaremos un enlace para
+                    restablecer tu contraseña</p>
+            </div>
+            <div class="form-group">
+                <label for="forgot-email">Correo electrónico</label>
+                <input type="email" id="forgot-email" placeholder="tu@empresa.com" required>
+            </div>
+            <button type="submit" class="submit-btn">Enviar Enlace</button>
+            <a href="#" onclick="hideForgotPassword(); return false;"
+                style="display: block; text-align: center; color: #6366f1; margin-top: 15px; text-decoration: none;">←
+                Volver al inicio de sesión</a>
+        </form>
+
+        <!-- Register Form -->
+        <form id="register-form" class="form-content" onsubmit="handleRegister(event)">
+            <div class="form-group">
+                <label for="reg-business">Nombre del Negocio *</label>
+                <input type="text" id="reg-business" placeholder="Mi Tienda de Tecnología" required>
+            </div>
+            <div class="form-group">
+                <label for="reg-email">Correo electrónico *</label>
+                <input type="email" id="reg-email" placeholder="tu@empresa.com" required>
+            </div>
+            <div class="form-group">
+                <label for="reg-phone">Teléfono</label>
+                <input type="tel" id="reg-phone" placeholder="+52 XXX XXX XXXX">
+            </div>
+            <div class="form-group">
+                <label for="reg-password">Contraseña *</label>
+                <input type="password" id="reg-password" placeholder="Mínimo 6 caracteres" required minlength="6">
+            </div>
+            <button type="submit" class="submit-btn">Crear Cuenta Mayorista</button>
+        </form>
+
+        <div class="divider"><span>o</span></div>
+
+        <a href="/tienda/index.html" class="back-link">← Volver a la Tienda</a>
+    </div>
+
+<<<<<<< HEAD
+    <script>
+        const API_BASE = '/api';
+
+        function showTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.form-content').forEach(form => form.classList.remove('active'));
+
+
+
+            if (tab === 'login') {
+                document.querySelectorAll('.tab-btn')[0].classList.add('active');
+                document.getElementById('login-form').classList.add('active');
+            } else {
+                document.querySelectorAll('.tab-btn')[1].classList.add('active');
+                document.getElementById('register-form').classList.add('active');
+            }
+
+            hideMessages();
+        }
+
+        function showError(msg) {
+            const el = document.getElementById('error-msg');
+            el.textContent = msg;
+            el.style.display = 'block';
+            document.getElementById('success-msg').style.display = 'none';
+        }
+
+        function showSuccess(msg) {
+            const el = document.getElementById('success-msg');
+            el.textContent = msg;
+            el.style.display = 'block';
+            document.getElementById('error-msg').style.display = 'none';
+        }
+
+        function hideMessages() {
+            document.getElementById('error-msg').style.display = 'none';
+            document.getElementById('success-msg').style.display = 'none';
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            hideMessages();
+
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            try {
+                const response = await fetch(`${API_BASE}/customers/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    localStorage.setItem('customer_token', data.access_token);
+                    localStorage.setItem('customer_data', JSON.stringify(data.customer));
+                    // Save role for pricing logic
+                    localStorage.setItem('customer_role', data.customer.role || 'retail');
+
+                    showSuccess('¡Bienvenido! Redirigiendo...');
+                    setTimeout(() => window.location.href = '/tienda/index.html', 1500);
+                } else {
+                    showError(data.detail || 'Credenciales incorrectas');
+                }
+            } catch (error) {
+                showError('Error de conexión. Intenta de nuevo.');
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            hideMessages();
+
+            const data = {
+                business_name: document.getElementById('reg-business').value,
+                email: document.getElementById('reg-email').value,
+                phone: document.getElementById('reg-phone').value || null,
+                password: document.getElementById('reg-password').value
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/customers/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    localStorage.setItem('customer_token', result.access_token);
+                    localStorage.setItem('customer_data', JSON.stringify(result.customer));
+                    // Save role (default is retail)
+                    localStorage.setItem('customer_role', result.customer.role || 'retail');
+
+                    showSuccess('¡Cuenta creada! Redirigiendo...');
+                    setTimeout(() => window.location.href = '/tienda/index.html', 1500);
+                } else {
+                    showError(result.detail || 'Error al crear cuenta');
+                }
+            } catch (error) {
+                showError('Error de conexión. Intenta de nuevo.');
+            }
+        }
+
+        // Show forgot password form
+        function showForgotPassword() {
+            // Hide all forms and deselect tabs
+            document.querySelectorAll('.form-content').forEach(f => f.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+            // Show forgot form
+            document.getElementById('forgot-form').classList.add('active');
+            hideMessages();
+        }
+
+        // Hide forgot password form
+        function hideForgotPassword() {
+            showTab('login');
+        }
+
+        // Handle forgot password submit
+        async function handleForgotPassword(e) {
+            e.preventDefault();
+            hideMessages();
+
+            const email = document.getElementById('forgot-email').value;
+
+            try {
+                const response = await fetch(`${API_BASE}/customers/forgot-password`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+
+                const result = await response.json();
+                showSuccess(result.message || 'Si el correo existe, recibirás un enlace');
+                document.getElementById('forgot-email').value = '';
+            } catch (error) {
+                showError('Error de conexión. Intenta de nuevo.');
+            }
+        }
+
+        // Check if already logged in
+        if (localStorage.getItem('customer_token')) {
+            window.location.href = '/tienda/index.html';
+        }
+    </script>
+=======
+    <!-- Scripts -->
+    <script src="/tienda-static/js/login.js" defer></script>
+>>>>>>> 43f9ece (Optimize frontend/backend, implement advanced admin search, and fix imports)
+</body>
+
+</html>

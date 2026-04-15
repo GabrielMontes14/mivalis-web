@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Confirmación de Orden</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f6f6f6; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 20px auto; background: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .header { text-align: center; border-bottom: 2px solid #3b82f6; padding-bottom: 20px; margin-bottom: 20px; }
+        .header h1 { color: #1e293b; margin: 0; }
+        .content { color: #334155; line-height: 1.6; }
+        .order-details { background: #f8fafc; padding: 15px; border-radius: 6px; margin: 20px 0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { text-align: left; padding: 10px; border-bottom: 1px solid #e2e8f0; }
+        th { background-color: #f1f5f9; }
+        .total-row td { font-weight: bold; font-size: 1.1em; border-top: 2px solid #cbd5e1; }
+        .footer { text-align: center; margin-top: 30px; font-size: 12px; color: #94a3b8; }
+        .btn { display: inline-block; padding: 10px 20px; background-color: #3b82f6; color: white; text-decoration: none; border-radius: 5px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏪 Bodega Mayorista</h1>
+            <p>Confirmación de Pedido</p>
+        </div>
+        
+        <div class="content">
+            <p>Hola <strong>{{ business_name }}</strong>,</p>
+            <p>¡Gracias por tu pedido! Hemos recibido tu orden correctamente y estamos procesándola.</p>
+            
+            <div class="order-details">
+                <h3>Detalles de la Orden: #{{ order_number }}</h3>
+                <p><strong>Dirección de entrega:</strong> {{ delivery_address }}</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cant.</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in items %}
+                        <tr>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>{{ item.total }}</td>
+                        </tr>
+                        {% endfor %}
+                        <tr class="total-row">
+                            <td colspan="2" style="text-align: right;">Total a Pagar:</td>
+                            <td>{{ total }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <p>Si tienes alguna pregunta, puedes responder a este correo o escribirnos por WhatsApp.</p>
+            
+            <div style="text-align: center;">
+                <a href="https://bodegamayorista.com/tienda" class="btn">Ver mi Pedido</a>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© {{ year }} Bodega Mayorista. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</body>
+</html>

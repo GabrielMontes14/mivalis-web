@@ -1,0 +1,178 @@
+# ============================================================
+# Codavity — Motor de Agentes SaaS
+# Docker Compose: Infraestructura de Producción
+# Servicios: Traefik (Reverse Proxy) + n8n + FastAPI
+# ============================================================
+
+version: "3.8"
+
+# ── Red interna ──────────────────────────────────────────────
+networks:
+  codavity_net:
+    driver: bridge
+
+# ── Volúmenes persistentes ───────────────────────────────────
+volumes:
+  n8n_data:
+    driver: local
+  traefik_certs:
+    driver: local
+  fastapi_logs:
+    driver: local
+
+# ── Servicios ────────────────────────────────────────────────
+services:
+
+  # ┌─────────────────────────────────────────────────────────┐
+  # │  TRAEFIK — Reverse Proxy + SSL automático (Let's Encrypt)│
+  # └─────────────────────────────────────────────────────────┘
+  traefik:
+    image: traefik:v3.0
+    container_name: codavity_traefik
+    restart: unless-stopped
+    command:
+      # API y Dashboard (desactivar en producción si no se necesita)
+      - "--api.dashboard=true"
+      - "--api.insecure=false"
+      # Entrypoints
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      # Redirección HTTP → HTTPS
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      # Let's Encrypt (ACME)
+      - "--certificatesresolvers.codavity_resolver.acme.httpchallenge=true"
+      - "--certificatesresolvers.codavity_resolver.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.codavity_resolver.acme.email=${ACME_EMAIL}"
+      - "--certificatesresolvers.codavity_resolver.acme.storage=/certs/acme.json"
+      # Docker provider
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=codavity_net"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik_certs:/certs
+    networks:
+      - codavity_net
+    labels:
+      # Dashboard (protegido con BasicAuth)
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik_dashboard.rule=Host(`dashboard.${DOMAIN}`)"
+      - "traefik.http.routers.traefik_dashboard.entrypoints=websecure"
+      - "traefik.http.routers.traefik_dashboard.tls.certresolver=codavity_resolver"
+      - "traefik.http.routers.traefik_dashboard.service=api@internal"
+      - "traefik.http.routers.traefik_dashboard.middlewares=dashboard_auth"
+      - "traefik.http.middlewares.dashboard_auth.basicauth.users=${TRAEFIK_DASHBOARD_AUTH}"
+
+  # ┌─────────────────────────────────────────────────────────┐
+  # │  N8N — Data Plane (Ejecución de agentes)                │
+  # └─────────────────────────────────────────────────────────┘
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    container_name: codavity_n8n
+    restart: unless-stopped
+    environment:
+      # ── Configuración general ──
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - WEBHOOK_URL=http://localhost:5678/
+      # ── Autenticación de la UI ──
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=${N8N_BASIC_AUTH_USER}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_BASIC_AUTH_PASSWORD}
+      # ── Variables Privadas (Accesibles vía $env en UI de n8n) ──
+      - N8N_BLOCK_ENV_ACCESS_IN_NODE=false
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}
+      # ── Timezone ──
+      - GENERIC_TIMEZONE=America/Bogota
+      - TZ=America/Bogota
+      # ── Public API ──
+      - N8N_PUBLIC_API_DISABLED=false
+      # ── Telemetría (desactivada para evitar errores SSL en local) ──
+      - N8N_DIAGNOSTICS_ENABLED=false
+      - N8N_PERSONALIZATION_ENABLED=false
+      # ── Ejecución ──
+      - EXECUTIONS_DATA_PRUNE=true
+      - EXECUTIONS_DATA_MAX_AGE=168
+      - N8N_METRICS=true
+      # ── Gemini API Key (para nodos AI) ──
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    ports:
+      - "5678:5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - codavity_net
+    labels:
+      - "traefik.enable=true"
+      # Router principal (UI + Webhooks)
+      - "traefik.http.routers.n8n.rule=Host(`${N8N_SUBDOMAIN}.${DOMAIN}`)"
+      - "traefik.http.routers.n8n.entrypoints=websecure"
+      - "traefik.http.routers.n8n.tls.certresolver=codavity_resolver"
+      - "traefik.http.services.n8n.loadbalancer.server.port=5678"
+
+  # ┌─────────────────────────────────────────────────────────┐
+  # │  FASTAPI — Management Plane (Orquestación de despliegues)│
+  # └─────────────────────────────────────────────────────────┘
+  fastapi:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: codavity_api
+    restart: unless-stopped
+    environment:
+      # ── Supabase ──
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}
+      - SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET}
+      # ── n8n API (comunicación via host para que API Key funcione) ──
+      - N8N_API_URL=http://host.docker.internal:5678/api/v1
+      - N8N_API_KEY=${N8N_API_KEY}
+      - N8N_BASIC_AUTH_USER=${N8N_BASIC_AUTH_USER}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_BASIC_AUTH_PASSWORD}
+      # ── Configuración FastAPI ──
+      - ENVIRONMENT=development
+      - LOG_LEVEL=INFO
+      - TEMPLATES_DIR=/app/templates
+      # ── Retry config ──
+      - DEPLOY_MAX_RETRIES=3
+      - DEPLOY_BACKOFF_BASE=2
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./templates:/app/templates:ro          # Plantillas JSON (solo lectura)
+      - ./dashboard:/dashboard:ro              # Frontend Dashboard (montado en raiz para main.py)
+      - fastapi_logs:/app/logs                  # Logs persistentes
+    networks:
+      - codavity_net
+    depends_on:
+      - n8n
+    labels:
+      - "traefik.enable=true"
+      # Router público
+      - "traefik.http.routers.api.rule=Host(`api.${DOMAIN}`)"
+      - "traefik.http.routers.api.entrypoints=websecure"
+      - "traefik.http.routers.api.tls.certresolver=codavity_resolver"
+      - "traefik.http.services.api.loadbalancer.server.port=8000"
+      # Rate limiting global (protección adicional a nivel de proxy)
+      - "traefik.http.middlewares.api_ratelimit.ratelimit.average=100"
+      - "traefik.http.middlewares.api_ratelimit.ratelimit.burst=50"
+      - "traefik.http.routers.api.middlewares=api_ratelimit"
+
+  # ┌─────────────────────────────────────────────────────────┐
+  # │  WATCHTOWER — Auto-Update de Imágenes Docker            │
+  # └─────────────────────────────────────────────────────────┘
+  watchtower:
+    image: containrrr/watchtower
+    container_name: codavity_watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 86400 codavity_n8n
+    networks:
+      - codavity_net

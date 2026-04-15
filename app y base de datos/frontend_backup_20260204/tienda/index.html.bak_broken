@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Bodega Mayorista - Tu distribuidor de confianza en tecnología. Precios exclusivos para mayoristas.">
+    <meta property="og:title" content="Bodega Mayorista - Tecnología al Mayor">
+    <meta property="og:description" content="Distribuidor mayorista de tecnología. Apple, Android, accesorios y más.">
+    <meta property="og:type" content="website">
+    <title>Bodega Mayorista - Tu Mayorista de Tecnología</title>
+
+    <link rel="icon" type="image/png" href="/tienda-static/favicon.png">
+    <link rel="apple-touch-icon" href="/tienda-static/favicon-192.png">
+
+    <!-- Preconnects -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://images.unsplash.com">
+    <link rel="dns-prefetch" href="https://images.unsplash.com">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="/tienda-static/css/tienda.min.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="/tienda-static/css/index.css">
+</head>
+
+<body>
+    <div class="zone-selector">
+        <!-- Header -->
+        <header class="zone-selector-header">
+            <img src="/tienda-static/img/logo.png" alt="Bodega Mayorista" class="header-logo">
+            <h1>Bodega Mayorista</h1>
+            <p>Los mejores precios del mercado</p>
+
+            <div class="search-container">
+                <input type="text" id="global-search" placeholder="¿Qué estás buscando? (ej. Samsung, Cables)..."
+                    autocomplete="off" aria-label="Buscar productos">
+                <button id="search-btn" type="button" aria-label="Buscar">🔍</button>
+            </div>
+        </header>
+
+        <!-- Main Layout Grid with Sidebars -->
+        <div class="main-layout-grid">
+
+            <!-- Left Sidebar: Best Sellers 1-10 -->
+            <aside class="sidebar-products left-sidebar" id="sidebar-left">
+                <h3 class="sidebar-title">🔥 Más Vendidos</h3>
+                <div class="sidebar-list" id="bestsellers-left">
+                    <!-- Dynamic Content -->
+                    <div class="loading-spinner-small"></div>
+                </div>
+            </aside>
+
+            <!-- Center Content: Zones -->
+            <main class="zones-grid">
+                <!-- Apple Zone -->
+                <a href="/tienda/catalogo.html?zona=apple" class="zone-card apple">
+                    <img src="/tienda-static/img/zone_apple.png" alt="Apple Zone" class="zone-icon-badge">
+                    <div class="zone-products-preview">
+                        <img src="https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=60&q=60&fm=webp"
+                            alt="iPhone" loading="lazy" width="50" height="50">
+                        <img src="https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?w=60&q=60&fm=webp"
+                            alt="AirPods" loading="lazy" width="50" height="50">
+                        <img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=60&q=60&fm=webp"
+                            alt="Watch" loading="lazy" width="50" height="50">
+                    </div>
+                    <h2>Apple Zone</h2>
+                    <p>iPhones, iPads, MacBooks, AirPods y todo el ecosistema Apple</p>
+                    <span class="zone-btn">Explorar Apple →</span>
+                </a>
+
+                <!-- Android Zone -->
+                <a href="/tienda/catalogo.html?zona=android" class="zone-card android">
+                    <img src="/tienda-static/img/zone_android.png" alt="Android Zone" class="zone-icon-badge">
+                    <div class="zone-products-preview">
+                        <img src="https://images.unsplash.com/photo-1610945264803-c22b62d2a7b3?w=60&q=60&fm=webp"
+                            alt="Samsung" loading="lazy" width="50" height="50">
+                        <img src="https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=60&q=60&fm=webp"
+                            alt="Xiaomi" loading="lazy" width="50" height="50">
+                        <img src="https://images.unsplash.com/photo-1574944985070-8f3ebc6b79d2?w=60&q=60&fm=webp"
+                            alt="Motorola" loading="lazy" width="50" height="50">
+                    </div>
+                    <h2>Android Zone</h2>
+                    <p>Samsung, Xiaomi, Motorola y los mejores dispositivos Android</p>
+                    <span class="zone-btn">Explorar Android →</span>
+                </a>
+
+                <!-- Cacharros Zone -->
+                <a href="/tienda/catalogo.html?zona=cacharros" class="zone-card cacharros">
+                    <img src="/tienda-static/img/zone_cacharros.png" alt="Cacharros Zone" class="zone-icon-badge">
+                    <div class="zone-products-preview">
+                        <img src="https://images.unsplash.com/photo-1594394489098-74ac04c0fc2e?w=60&q=60&fm=webp"
+                            alt="Ring Light" loading="lazy" width="50" height="50">
+                        <img src="https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=60&q=60&fm=webp"
+                            alt="Power Bank" loading="lazy" width="50" height="50">
+                        <img src="https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=60&q=60&fm=webp"
+                            alt="Mouse" loading="lazy" width="50" height="50">
+                    </div>
+
+                    <h2>Cacharros</h2>
+                    <p>Artículos variados de tecnología, gadgets y electrónica</p>
+                    <span class="zone-btn">Ver Productos →</span>
+                </a>
+
+                <!-- Accesorios Zone -->
+                <a href="/tienda/catalogo.html?zona=accesorios" class="zone-card accesorios">
+                    <img src="/tienda-static/img/zone_accesorios.png" alt="Accesorios Zone" class="zone-icon-badge">
+                    <div class="zone-products-preview">
+                        <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?w=60&q=60&fm=webp"
+                            alt="Cargador" loading="lazy" width="50" height="50">
+                        <img src="https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=60&q=60&fm=webp"
+                            alt="Audífonos" loading="lazy" width="50" height="50">
+                        <img src="https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=60&q=60&fm=webp"
+                            alt="Funda" loading="lazy" width="50" height="50">
+                    </div>
+
+                    <h2>Accesorios</h2>
+                    <p>Fundas, audífonos, vidrios templados, cables y más</p>
+                    <span class="zone-btn">Ver Accesorios →</span>
+                </a>
+            </main>
+
+            <!-- Right Sidebar: Trending 11-20 -->
+            <aside class="sidebar-products right-sidebar" id="sidebar-right">
+                <h3 class="sidebar-title">⚡ Tendencias</h3>
+                <div class="sidebar-list" id="bestsellers-right">
+                    <!-- Dynamic Content -->
+                    <div class="loading-spinner-small"></div>
+                </div>
+            </aside>
+
+        </div>
+
+        <!-- Quick Links -->
+        <div class="quick-links">
+            <div id="guest-links">
+                <p>¿Ya tienes cuenta mayorista?</p>
+                <a href="/tienda/login.html">Iniciar Sesión</a>
+                <a href="/tienda/carrito.html">🛒 Mi Carrito</a>
+            </div>
+            <div id="user-links" class="hidden">
+                <p>👋 Hola, <span id="user-name">Usuario</span></p>
+                <a href="/tienda/carrito.html">🛒 Mi Carrito</a>
+                <a href="#" class="logout-link" onclick="logout()">🚪 Cerrar Sesión</a>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer-anim">
+            <p>© 2026 Bodega Mayorista - Los Mejores Precios del Mercado</p>
+            <p>📍 Montería - Córdoba - Colombia | 📞 +57 321 7570408</p>
+            <div class="social-icons">
+                <a href="https://wa.me/573217570408" target="_blank" rel="noopener" title="WhatsApp"
+                    aria-label="WhatsApp">
+                    <svg viewBox="0 0 24 24" fill="#25D366" width="24" height="24">
+                        <path
+                            d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                    </svg>
+                </a>
+                <a href="https://instagram.com/" target="_blank" rel="noopener" title="Instagram"
+                    aria-label="Instagram">
+                    <svg viewBox="0 0 24 24" width="24" height="24">
+                        <defs>
+                            <linearGradient id="ig-gradient" x1="0%" y1="100%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:#FFDC80" />
+                                <stop offset="50%" style="stop-color:#F56040" />
+                                <stop offset="100%" style="stop-color:#833AB4" />
+                            </linearGradient>
+                        </defs>
+                        <path fill="url(#ig-gradient)"
+                            d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                    </svg>
+                </a>
+                <a href="https://facebook.com/" target="_blank" rel="noopener" title="Facebook" aria-label="Facebook">
+                    <svg viewBox="0 0 24 24" fill="#1877F2" width="24" height="24">
+                        <path
+                            d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                    </svg>
+                </a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" type="button" aria-label="Cambiar tema" onclick="toggleTheme()">
+        <span class="icon-moon">🌙</span>
+        <span class="icon-sun">☀️</span>
+    </button>
+
+    <!-- Logic -->
+    <script src="/tienda-static/js/index.js" defer></script>
+    <script src="/tienda-static/js/tienda.js?v=6-fix" defer></script>
+
+    <script>
+        // Check login status
+        function checkLoginStatus() {
+            const token = localStorage.getItem('customer_token');
+            const customerData = localStorage.getItem('customer_data');
+
+            if (token && customerData) {
+                try {
+                    const customer = JSON.parse(customerData);
+                    document.getElementById('guest-links').classList.add('hidden');
+                    document.getElementById('user-links').classList.remove('hidden');
+                    document.getElementById('user-name').textContent = customer.business_name || customer.email;
+                    console.log('User logged in:', customer.email);
+                } catch (e) {
+                    logout();
+                }
+            }
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('customer_token');
+            localStorage.removeItem('customer_data');
+            document.getElementById('guest-links').classList.remove('hidden');
+            document.getElementById('user-links').classList.add('hidden');
+            window.location.reload();
+        }
+
+        // Run on page load
+        document.addEventListener('DOMContentLoaded', checkLoginStatus);
+
+        // Theme toggle logic is handled in index.js but we keep the button here
+        const THEME_STORAGE_KEY = 'bodega_theme';
+        function initTheme() {
+            const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            } else if (prefersDark) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        }
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem(THEME_STORAGE_KEY, newTheme);
+        }
+        initTheme();
+
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/tienda/sw.js')
+                    .then(reg => console.log('SW registered'))
+                    .catch(err => console.log('SW failed', err));
+            });
+        }
+    </script>
+</body>
+
+</html>

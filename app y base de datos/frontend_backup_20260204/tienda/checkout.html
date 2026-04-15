@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Finaliza tu compra de forma segura - Bodega Mayorista">
+    <title>Pago - Bodega Mayorista</title>
+    <link rel="icon" type="image/png" href="/tienda-static/favicon.png">
+    <link rel="apple-touch-icon" href="/tienda-static/favicon-192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/tienda-static/css/checkout.css">
+
+    <!-- Wompi SDK -->
+    <script src="https://checkout.wompi.co/widget.js"></script>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="checkout-header">
+        <a href="/tienda/index.html" class="logo">
+            <span>🏪</span> Bodega Mayorista
+        </a>
+        <div class="secure-badge">
+            🔒 Pago 100% Seguro
+        </div>
+    </header>
+
+    <!-- Main Checkout -->
+    <div class="checkout-container" id="checkout-content">
+        <!-- Left: Form -->
+        <div class="checkout-form">
+            <a href="/tienda/carrito.html" class="back-link">← Volver al carrito</a>
+
+            <!-- Sandbox Notice -->
+            <div class="sandbox-notice">
+                <strong>⚠️ Modo de Pruebas (Sandbox)</strong>
+                Los pagos son simulados. No se realizarán cargos reales.
+            </div>
+
+            <div class="message" id="msg"></div>
+
+            <!-- Shipping Section -->
+            <div class="form-section">
+                <h2><span class="step-number">1</span> Datos de Entrega</h2>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nombre completo *</label>
+                        <input type="text" id="customer_name" placeholder="Juan Pérez" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Teléfono *</label>
+                        <input type="tel" id="phone" placeholder="300 123 4567" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" id="email" placeholder="tu@correo.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Documento de identidad</label>
+                        <input type="text" id="document" placeholder="CC 1234567890">
+                    </div>
+                </div>
+
+                <div class="form-row full">
+                    <div class="form-group">
+                        <label>Dirección de entrega *</label>
+                        <textarea id="address" placeholder="Calle, número, barrio, ciudad" required></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Methods -->
+            <div class="form-section">
+                <h2><span class="step-number">2</span> Método de Pago</h2>
+
+                <div class="payment-methods">
+                    <!-- Tarjeta Crédito/Débito -->
+                    <label class="payment-option selected" onclick="selectPayment('card')">
+                        <input type="radio" name="payment" value="card" checked>
+                        <span class="radio"></span>
+                        <span class="icon">💳</span>
+                        <div class="info">
+                            <h4>Tarjeta Crédito / Débito</h4>
+                            <p>Visa, Mastercard, American Express</p>
+                        </div>
+                    </label>
+
+                    <!-- Nequi -->
+                    <label class="payment-option" onclick="selectPayment('nequi')">
+                        <input type="radio" name="payment" value="nequi">
+                        <span class="radio"></span>
+                        <span class="icon">📱</span>
+                        <div class="info">
+                            <h4>Nequi</h4>
+                            <p>Paga desde tu app Nequi</p>
+                        </div>
+                    </label>
+
+                    <!-- Bancolombia -->
+                    <label class="payment-option" onclick="selectPayment('bancolombia')">
+                        <input type="radio" name="payment" value="bancolombia">
+                        <span class="radio"></span>
+                        <img src="/tienda-static/img/bancolombia.png" alt="Bancolombia"
+                            style="width: 48px; height: 48px; object-fit: contain; margin-left: 8px;">
+                        <div class="info">
+                            <h4>Transferencia Bancolombia</h4>
+                            <p>Realiza tu pago mediante transferencia bancaria</p>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Order Summary -->
+        <div class="order-summary">
+            <h3>📦 Resumen del Pedido</h3>
+
+            <div class="order-items" id="order-items"></div>
+
+            <div class="order-totals">
+                <div class="row">
+                    <span>Subtotal</span>
+                    <span id="subtotal">$0</span>
+                </div>
+                <div class="row">
+                    <span>Envío</span>
+                    <span id="shipping">Por confirmar</span>
+                </div>
+                <div class="row total">
+                    <span>Total</span>
+                    <span class="value" id="total">$0</span>
+                </div>
+            </div>
+
+            <!-- Wompi Pay Button -->
+            <button class="pay-button" id="pay-btn" onclick="processPayment()">
+                Pagar Ahora 🔒
+            </button>
+
+            <!-- PayPal Button Container -->
+            <div id="paypal-button-container"></div>
+
+            <p style="text-align: center; font-size: 0.8rem; color: #666; margin-top: 15px;">
+                🔒 Transacción segura procesada por Wompi
+            </p>
+        </div>
+    </div>
+
+    <!-- Login Required -->
+    <div class="checkout-container" id="login-required" style="display: none;">
+        <div class="checkout-form login-required">
+            <h2>🔐 Inicia Sesión</h2>
+            <p>Necesitas una cuenta para realizar pedidos</p>
+            <a href="/tienda/login.html" class="btn">Iniciar Sesión</a>
+        </div>
+    </div>
+
+<<<<<<< HEAD
+    <script>
+        // =====================================================
+        // CONFIGURACIÓN - WOMPI SANDBOX (PRUEBAS)
+        // =====================================================
+        // Esta es la llave PÚBLICA de sandbox de Wompi
+        // En producción, reemplaza con tu llave pública real
+        const WOMPI_PUBLIC_KEY = 'pub_stagtest_g2u0HQd3ZMh05hsSgTS2lUV8t3s4mOt7';
+
+        // URL de tu sitio (para redirecciones)
+        const SITE_URL = window.location.origin;
+
+        // Moneda (COP = Pesos Colombianos)
+        const CURRENCY = 'COP';
+
+        // =====================================================
+        // VARIABLES GLOBALES
+        // =====================================================
+        let selectedPaymentMethod = 'card';
+        let orderTotal = 0;
+        let orderReference = '';
+
+        // =====================================================
+        // FUNCIONES DE UTILIDAD
+        // =====================================================
+
+        function getCart() {
+            return JSON.parse(localStorage.getItem('bodega_cart') || '[]');
+        }
+
+        function clearCart() {
+            localStorage.removeItem('bodega_cart');
+        }
+
+        function getCustomerToken() {
+            return localStorage.getItem('customer_token');
+        }
+
+        function getCustomerData() {
+            const data = localStorage.getItem('customer_data');
+            return data ? JSON.parse(data) : null;
+        }
+
+        function formatPrice(price) {
+            return parseFloat(price).toLocaleString('es-CO', { maximumFractionDigits: 0 });
+        }
+
+        function generateReference() {
+            // Genera referencia única para la transacción
+            return 'BM-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5).toUpperCase();
+        }
+
+        function showMessage(text, type = 'info') {
+            const msg = document.getElementById('msg');
+            msg.textContent = text;
+            msg.className = 'message ' + type;
+        }
+
+        // =====================================================
+        // SELECCIÓN DE MÉTODO DE PAGO
+        // =====================================================
+
+        function selectPayment(method) {
+            selectedPaymentMethod = method;
+
+            // Actualizar UI
+            document.querySelectorAll('.payment-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+
+            // Mostrar/ocultar botones según método
+            const payBtn = document.getElementById('pay-btn');
+            const paypalContainer = document.getElementById('paypal-button-container');
+
+            if (method === 'paypal') {
+                payBtn.style.display = 'none';
+                paypalContainer.style.display = 'block';
+            } else {
+                payBtn.style.display = 'block';
+                paypalContainer.style.display = 'none';
+            }
+        }
+
+        // =====================================================
+        // INICIALIZACIÓN
+        // =====================================================
+
+        function initCheckout() {
+            const token = getCustomerToken();
+            const cart = getCart();
+
+            // Verificar login
+            if (!token) {
+                document.getElementById('checkout-content').style.display = 'none';
+                document.getElementById('login-required').style.display = 'block';
+                return;
+            }
+
+            // Verificar carrito
+            if (cart.length === 0) {
+                window.location.href = '/tienda/carrito.html';
+                return;
+            }
+
+            // Pre-llenar datos del cliente
+            const customer = getCustomerData();
+            if (customer) {
+                if (customer.contact_name) document.getElementById('customer_name').value = customer.contact_name;
+                if (customer.email) document.getElementById('email').value = customer.email;
+                if (customer.phone) document.getElementById('phone').value = customer.phone;
+                if (customer.address) document.getElementById('address').value = customer.address;
+            }
+
+            // Renderizar items
+            renderOrderItems(cart);
+
+            // Generar referencia
+            orderReference = generateReference();
+
+            // Inicializar PayPal
+            initPayPal();
+        }
+
+        function renderOrderItems(cart) {
+            const container = document.getElementById('order-items');
+            let subtotal = 0;
+
+            container.innerHTML = cart.map(item => {
+                const itemTotal = item.price * item.quantity;
+                subtotal += itemTotal;
+                return `
+                    <div class="order-item">
+                        <img src="${item.image_url || getPlaceholderImage(item.category_name)}" alt="${item.name}">
+                        <div class="order-item-info">
+                            <h4>${item.name}</h4>
+                            <span class="qty">Cant: ${item.quantity}</span>
+                        </div>
+                        <span class="order-item-price">$${formatPrice(itemTotal)}</span>
+                    </div>
+                `;
+            }).join('');
+
+            orderTotal = subtotal;
+            document.getElementById('subtotal').textContent = `$${formatPrice(subtotal)}`;
+            document.getElementById('total').textContent = `$${formatPrice(subtotal)}`;
+        }
+
+        // =====================================================
+        // PROCESAMIENTO DE PAGOS - WOMPI
+        // =====================================================
+
+        function processPayment() {
+            // Validar formulario
+            const name = document.getElementById('customer_name').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const address = document.getElementById('address').value;
+
+            if (!name || !email || !phone || !address) {
+                showMessage('Por favor completa todos los campos requeridos', 'error');
+                return;
+            }
+
+            // Validar email
+            if (!email.includes('@')) {
+                showMessage('Por favor ingresa un email válido', 'error');
+                return;
+            }
+
+            // Procesar según método seleccionado
+            switch (selectedPaymentMethod) {
+                case 'card':
+                case 'pse':
+                case 'nequi':
+                case 'bancolombia':
+                    openWompiCheckout();
+                    break;
+                case 'cash':
+                    processCashPayment();
+                    break;
+                case 'transfer':
+                    processTransferPayment();
+                    break;
+                default:
+                    showMessage('Método de pago no válido', 'error');
+            }
+        }
+
+        // =====================================================
+        // PAGO POR TRANSFERENCIA BANCARIA (Pedido Manual)
+        // =====================================================
+
+        async function processTransferPayment() {
+            const payBtn = document.getElementById('pay-btn');
+            payBtn.disabled = true;
+            payBtn.textContent = 'Procesando...';
+            showMessage('Creando tu pedido...', 'info');
+
+            try {
+                const cart = getCart();
+                const token = getCustomerToken();
+
+                // Preparar datos del pedido
+                const orderData = {
+                    items: cart.map(item => ({
+                        product_id: item.id,
+                        quantity: item.quantity,
+                        product_name: item.name,
+                        unit_price: item.price
+                    })),
+                    delivery_address: document.getElementById('address').value,
+                    notes: `Pago por Transferencia Bancaria - Ref: ${orderReference}`
+                };
+
+                // Crear pedido en el backend
+                const response = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(orderData)
+                });
+
+                if (response.ok) {
+                    const order = await response.json();
+
+                    // Limpiar carrito
+                    clearCart();
+
+                    // Guardar info para página de resultado
+                    localStorage.setItem('last_transaction', JSON.stringify({
+                        id: order.order_number,
+                        reference: orderReference,
+                        amount: orderTotal,
+                        status: 'PENDING',
+                        payment_method: 'transfer'
+                    }));
+
+                    showMessage('¡Pedido creado! Te llegará un correo de confirmación.', 'success');
+
+                    setTimeout(() => {
+                        window.location.href = 'pago-resultado.html?status=pending';
+                    }, 2000);
+                } else {
+                    const error = await response.json();
+                    showMessage(error.detail || 'Error al crear el pedido', 'error');
+                    payBtn.disabled = false;
+                    payBtn.textContent = 'Pagar Ahora 🔒';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('Error de conexión. Intenta de nuevo.', 'error');
+                payBtn.disabled = false;
+                payBtn.textContent = 'Pagar Ahora 🔒';
+            }
+        }
+
+        // =====================================================
+        // WOMPI CHECKOUT WIDGET
+        // =====================================================
+
+        function openWompiCheckout() {
+            /*
+             * FLUJO DE PAGO CON WOMPI:
+             * 1. Cliente hace clic en "Pagar"
+             * 2. Se abre el widget de Wompi (checkout seguro)
+             * 3. Cliente ingresa datos de pago en el widget de Wompi
+             * 4. Wompi procesa el pago con el banco
+             * 5. Wompi redirige de vuelta con el resultado
+             * 6. (Opcional) Webhook notifica a tu servidor
+             * 
+             * IMPORTANTE: Los datos de tarjeta NUNCA tocan tu servidor
+             */
+
+            const checkout = new WidgetCheckout({
+                currency: CURRENCY,
+                amountInCents: orderTotal * 100, // Wompi usa centavos
+                reference: orderReference,
+                publicKey: WOMPI_PUBLIC_KEY,
+
+                // Información del cliente
+                customerData: {
+                    email: document.getElementById('email').value,
+                    fullName: document.getElementById('customer_name').value,
+                    phoneNumber: document.getElementById('phone').value.replace(/\s/g, ''),
+                    phoneNumberPrefix: '+57',
+                    legalId: document.getElementById('document').value || '1234567890',
+                    legalIdType: 'CC'
+                },
+
+                // Metadatos (se guardan con la transacción)
+                metadata: {
+                    orden_ref: orderReference,
+                    direccion: document.getElementById('address').value,
+                    metodo: selectedPaymentMethod
+                },
+
+                // URLs de redirección
+                redirectUrl: `${SITE_URL}/tienda/pago-resultado.html`
+            });
+
+            // Abrir el widget
+            checkout.open(function (result) {
+                /*
+                 * CALLBACK cuando se cierra el widget
+                 * result contiene información de la transacción
+                 */
+                const transaction = result.transaction;
+
+                if (transaction) {
+                    console.log('Transacción:', transaction);
+
+                    if (transaction.status === 'APPROVED') {
+                        handlePaymentSuccess(transaction);
+                    } else if (transaction.status === 'PENDING') {
+                        handlePaymentPending(transaction);
+                    } else {
+                        handlePaymentError(transaction);
+                    }
+                }
+            });
+        }
+
+        // =====================================================
+        // PAGO EN EFECTIVO (Referencia)
+        // =====================================================
+
+        function processCashPayment() {
+            /*
+             * PAGO EN EFECTIVO:
+             * 1. Se genera una referencia de pago
+             * 2. Cliente lleva la referencia a Efecty/Baloto
+             * 3. Paga en efectivo
+             * 4. Wompi notifica via webhook cuando se confirma
+             */
+
+            showMessage('Generando referencia de pago...', 'info');
+
+            // En producción, esto iría al backend para crear la referencia
+            // Por ahora, simulamos con el widget de Wompi
+            openWompiCheckout();
+        }
+
+        // =====================================================
+        // PAYPAL INTEGRATION
+        // =====================================================
+
+        function initPayPal() {
+            /*
+             * PAYPAL CHECKOUT:
+             * - Ideal para pagos internacionales
+             * - Soporta múltiples monedas
+             * - El cliente puede pagar con su cuenta PayPal o tarjeta
+             */
+
+            paypal.Buttons({
+                style: {
+                    layout: 'vertical',
+                    color: 'blue',
+                    shape: 'rect',
+                    label: 'pay'
+                },
+
+                // Crear la orden en PayPal
+                createOrder: function (data, actions) {
+                    // Convertir COP a USD (aproximado)
+                    const usdAmount = (orderTotal / 4000).toFixed(2);
+
+                    return actions.order.create({
+                        purchase_units: [{
+                            reference_id: orderReference,
+                            description: 'Compra en Bodega Mayorista',
+                            amount: {
+                                currency_code: 'USD',
+                                value: usdAmount
+                            }
+                        }]
+                    });
+                },
+
+                // Cuando el pago es aprobado
+                onApprove: function (data, actions) {
+                    return actions.order.capture().then(function (details) {
+                        console.log('PayPal Success:', details);
+                        handlePaymentSuccess({
+                            id: details.id,
+                            status: 'APPROVED',
+                            payment_method_type: 'PAYPAL',
+                            reference: orderReference
+                        });
+                    });
+                },
+
+                // Cuando hay un error
+                onError: function (err) {
+                    console.error('PayPal Error:', err);
+                    showMessage('Error en el pago con PayPal. Intenta de nuevo.', 'error');
+                },
+
+                // Cuando el usuario cancela
+                onCancel: function (data) {
+                    showMessage('Pago cancelado', 'info');
+                }
+
+            }).render('#paypal-button-container');
+        }
+
+        // =====================================================
+        // MANEJADORES DE RESULTADO
+        // =====================================================
+
+        function handlePaymentSuccess(transaction) {
+            showMessage('¡Pago exitoso! Procesando tu pedido...', 'success');
+
+            // Limpiar carrito
+            clearCart();
+
+            // Guardar info de la transacción
+            localStorage.setItem('last_transaction', JSON.stringify({
+                id: transaction.id,
+                reference: orderReference,
+                amount: orderTotal,
+                status: 'APPROVED'
+            }));
+
+            // Redirigir a página de confirmación
+            setTimeout(() => {
+                window.location.href = 'pago-resultado.html?status=success';
+            }, 2000);
+        }
+
+        function handlePaymentPending(transaction) {
+            showMessage('Pago pendiente. Te notificaremos cuando se confirme.', 'info');
+
+            localStorage.setItem('last_transaction', JSON.stringify({
+                id: transaction.id,
+                reference: orderReference,
+                amount: orderTotal,
+                status: 'PENDING'
+            }));
+
+            setTimeout(() => {
+                window.location.href = 'pago-resultado.html?status=pending';
+            }, 2000);
+        }
+
+        function handlePaymentError(transaction) {
+            const errorMessages = {
+                'DECLINED': 'Pago rechazado por el banco. Verifica tus datos.',
+                'VOIDED': 'Transacción anulada.',
+                'ERROR': 'Error al procesar el pago. Intenta de nuevo.'
+            };
+
+            showMessage(errorMessages[transaction.status] || 'Error en el pago', 'error');
+        }
+
+        // =====================================================
+        // INICIAR
+        // =====================================================
+        document.addEventListener('DOMContentLoaded', initCheckout);
+    </script>
+=======
+    <!-- Scripts -->
+    <script src="/tienda-static/js/checkout.js" defer></script>
+>>>>>>> 43f9ece (Optimize frontend/backend, implement advanced admin search, and fix imports)
+</body>
+
+</html>
