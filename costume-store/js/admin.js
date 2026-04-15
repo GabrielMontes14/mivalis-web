@@ -1,33 +1,116 @@
 /**
  * Admin Dashboard Logic
- * Handles the logic for the admin panel, including dashboard, products, and orders.
+ * Protected — requires authenticated user with admin role.
  */
 
-// Ensure global implementation
 window.admin = {
     view: 'dashboard',
     container: null,
 
-    /**
-     * Initialize the admin panel
-     */
     init: async () => {
         window.admin.container = document.getElementById('admin-content');
-        if (!window.admin.container) {
-            console.error("Admin container not found!");
+        if (!window.admin.container) return;
+
+        window.admin.container.innerHTML = '<div style="text-align:center;padding:3rem;">Verificando acceso...</div>';
+        await DataService.preload();
+
+        if (!DataService.isLoggedIn()) {
+            window.admin.renderLoginGate();
             return;
         }
-        window.admin.container.innerHTML = '<div style="text-align:center;padding:3rem;">Cargando datos...</div>';
-        await DataService.preload();
+
+        const user = DataService.getAuth();
+        const session = await sb.auth.getSession();
+        const role = session?.data?.session?.user?.user_metadata?.role;
+
+        if (role !== 'admin') {
+            window.admin.renderAccessDenied();
+            return;
+        }
+
+        document.getElementById('admin-sidebar').style.display = '';
         window.admin.navigate('dashboard');
     },
 
-    /**
-     * Navigation Handler
-     */
+    renderLoginGate: () => {
+        document.getElementById('admin-sidebar').style.display = 'none';
+        window.admin.container.innerHTML = `
+            <div style="display:flex;align-items:center;justify-content:center;min-height:80vh;width:100%;">
+                <div class="auth-box" style="max-width:400px;width:100%;">
+                    <h2 style="text-align:center;margin-bottom:0.5rem;">Panel Admin</h2>
+                    <p style="text-align:center;color:#999;margin-bottom:1.5rem;">Inicia sesión con tu cuenta de administrador</p>
+                    <form onsubmit="event.preventDefault(); window.admin.doLogin(this)">
+                        <div class="form-group">
+                            <label>Correo</label>
+                            <input type="email" name="email" class="input-block" required placeholder="admin@mivalis.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Contraseña</label>
+                            <input type="password" name="password" class="input-block" required>
+                        </div>
+                        <p id="admin-login-error" style="color:#ff4444;display:none;margin-bottom:1rem;font-size:0.9rem;"></p>
+                        <button type="submit" class="btn" style="width:100%;">Ingresar</button>
+                    </form>
+                    <p style="text-align:center;margin-top:1.5rem;">
+                        <a href="index.html" style="color:var(--neon-cyan,#0af);">Volver a la tienda</a>
+                    </p>
+                </div>
+            </div>
+        `;
+    },
+
+    doLogin: async (form) => {
+        const fd = new FormData(form);
+        const btn = form.querySelector('button[type="submit"]');
+        const errEl = document.getElementById('admin-login-error');
+        btn.disabled = true;
+        btn.textContent = 'Verificando...';
+        errEl.style.display = 'none';
+
+        const result = await DataService.loginAsync(fd.get('email'), fd.get('password'));
+
+        if (!result.success) {
+            errEl.textContent = result.error || 'Credenciales incorrectas';
+            errEl.style.display = 'block';
+            btn.disabled = false;
+            btn.textContent = 'Ingresar';
+            return;
+        }
+
+        // Check admin role
+        const session = await sb.auth.getSession();
+        const role = session?.data?.session?.user?.user_metadata?.role;
+
+        if (role !== 'admin') {
+            await sb.auth.signOut();
+            DataService.clearAuth();
+            errEl.textContent = 'Acceso denegado. Esta cuenta no tiene permisos de administrador.';
+            errEl.style.display = 'block';
+            btn.disabled = false;
+            btn.textContent = 'Ingresar';
+            return;
+        }
+
+        document.getElementById('admin-sidebar').style.display = '';
+        window.admin.navigate('dashboard');
+    },
+
+    renderAccessDenied: () => {
+        document.getElementById('admin-sidebar').style.display = 'none';
+        window.admin.container.innerHTML = `
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;">
+                <h2 style="color:#ff4444;margin-bottom:1rem;">Acceso Denegado</h2>
+                <p style="color:#999;margin-bottom:2rem;">Tu cuenta no tiene permisos de administrador.</p>
+                <div style="display:flex;gap:1rem;">
+                    <button class="btn-outline" onclick="DataService.clearAuth(); window.admin.renderLoginGate();">Cerrar Sesión</button>
+                    <a href="index.html" class="btn">Volver a la Tienda</a>
+                </div>
+            </div>
+        `;
+    },
+
     navigate: (viewName) => {
         window.admin.view = viewName;
-        // Update sidebar active state
         document.querySelectorAll('#admin-sidebar a').forEach(el => el.classList.remove('active'));
         const link = document.querySelector(`#admin-sidebar a[onclick*="${viewName}"]`);
         if (link) link.classList.add('active');
@@ -41,11 +124,7 @@ window.admin = {
         if (window.lucide) window.lucide.createIcons();
     },
 
-    /**
-     * Renders
-     */
     renderDashboard: () => {
-        // Use synchronous getters for dashboard stats to be instant
         const products = DataService.getProducts();
         const orders = DataService.getOrders();
 
@@ -71,7 +150,6 @@ window.admin = {
                     <p class="price" style="color: ${lowStock > 0 ? 'var(--color-black)' : 'var(--color-mint)'}; font-weight: 900;">${lowStock}</p>
                 </div>
             </div>
-
             <div class="section">
                 <h3>Pedidos Recientes</h3>
                 ${window.admin.buildOrderTable(orders.slice(0, 5))}
@@ -81,8 +159,6 @@ window.admin = {
 
     renderProducts: async () => {
         window.admin.container.innerHTML = '<div style="text-align:center; padding:2rem;">Cargando productos...</div>';
-
-        // Use Async API to ensure we display fresh data or fallback
         const products = await DataService.getProductsAsync();
 
         window.admin.container.innerHTML = `
@@ -93,18 +169,11 @@ window.admin = {
             <table>
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Categoría</th>
-                        <th>Precio</th>
-                        <th>Stock</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
+                        <th>ID</th><th>Nombre</th><th>Categoría</th><th>Precio</th><th>Stock</th><th>Estado</th><th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     ${products.map(p => {
-            // Handle snake_case matching for CSS. 'no_devuelto' -> 'status-no_devuelto'
             const statusClass = `status-${p.estado}`;
             return `
                         <tr>
@@ -114,10 +183,7 @@ window.admin = {
                             <td>$${parseFloat(p.precio || p.price).toFixed(2)}</td>
                             <td>${p.stock}</td>
                             <td>
-                                <select 
-                                    onchange="window.admin.updateProductStatus(${p.id}, this.value, this)" 
-                                    class="status-select ${statusClass}"
-                                >
+                                <select onchange="window.admin.updateProductStatus(${p.id}, this.value, this)" class="status-select ${statusClass}">
                                     <option value="listo" ${p.estado === 'listo' ? 'selected' : ''}>Listo para alquilar</option>
                                     <option value="alquilado" ${p.estado === 'alquilado' ? 'selected' : ''}>Alquilado</option>
                                     <option value="mantenimiento" ${p.estado === 'mantenimiento' ? 'selected' : ''}>En mantenimiento</option>
@@ -128,8 +194,7 @@ window.admin = {
                                 <button class="action-btn edit-btn" onclick="window.admin.openProductModal(${p.id})">Editar</button>
                                 <button class="action-btn delete-btn" onclick="window.admin.deleteProduct(${p.id})">Borrar</button>
                             </td>
-                        </tr>
-                        `;
+                        </tr>`;
         }).join('')}
                 </tbody>
             </table>
@@ -142,24 +207,14 @@ window.admin = {
         window.admin.container.innerHTML = `
             <h1>Gestionar Pedidos</h1>
             ${window.admin.buildOrderTable(orders)}
-         `;
+        `;
     },
 
     buildOrderTable: (orders) => {
-        if (!orders || orders.length === 0) {
-            return '<p>No hay pedidos recientes</p>';
-        }
-
+        if (!orders || orders.length === 0) return '<p>No hay pedidos recientes</p>';
         return `
             <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Fecha</th>
-                        <th>Total</th>
-                        <th>Estado</th>
-                    </tr>
-                </thead>
+                <thead><tr><th>ID</th><th>Fecha</th><th>Total</th><th>Estado</th></tr></thead>
                 <tbody>
                     ${orders.map(order => `
                         <tr>
@@ -181,20 +236,14 @@ window.admin = {
         `;
     },
 
-    /**
-     * Product CRUD
-     */
     openProductModal: (id = null) => {
         const modal = document.getElementById('modal-screen');
         const title = document.getElementById('modal-title');
         const form = document.getElementById('product-form');
-
-        // Reset
         form.reset();
         document.getElementById('p-id').value = '';
 
         if (id) {
-            // Edit Mode
             const product = DataService.getProducts().find(p => p.id === id);
             if (product) {
                 title.innerText = 'Editar Producto';
@@ -203,22 +252,15 @@ window.admin = {
                 document.getElementById('p-category').value = product.categoria || product.category;
                 document.getElementById('p-price').value = product.precio || product.price;
                 document.getElementById('p-stock').value = product.stock;
-                document.getElementById('p-image').value = product.imagen || product.image || "https://images.unsplash.com/photo-1508266205937-4f24c3d3dd52?q=80&w=600&auto=format&fit=crop";
+                document.getElementById('p-image').value = product.imagen || product.image || '';
                 if (document.getElementById('p-desc')) {
                     document.getElementById('p-desc').value = product.descripcion || product.description || '';
                 }
             }
         } else {
-            // Add Mode
             title.innerText = 'Añadir Producto';
         }
-
         modal.classList.add('open');
-    },
-
-    // Alias for backward compatibility or incorrect calls
-    openModal: (id = null) => {
-        window.admin.openProductModal(id);
     },
 
     closeModal: () => {
@@ -239,23 +281,12 @@ window.admin = {
             return;
         }
 
-        const productData = {
+        const result = await DataService.saveProductAsync({
             id: id ? parseInt(id) : null,
-            nombre: name,
-            name: name,
-            categoria: category,
-            category: category,
-            precio: price,
-            price: price,
-            stock: stock,
-            imagen: image,
-            image: image,
-            descripcion: desc,
-            description: desc,
-            estado: 'listo'
-        };
+            nombre: name, categoria: category, precio: price,
+            stock, imagen: image, descripcion: desc, estado: 'listo'
+        });
 
-        const result = await DataService.saveProductAsync(productData);
         if (result.success) {
             window.admin.closeModal();
             window.admin.renderProducts();
@@ -272,17 +303,11 @@ window.admin = {
     },
 
     updateProductStatus: async (id, newStatus, selectElement) => {
-        // Visual feedback immediately
         const oldClass = Array.from(selectElement.classList).find(c => c.startsWith('status-'));
         if (oldClass) selectElement.classList.remove(oldClass);
         selectElement.classList.add(`status-${newStatus.toLowerCase().replace(' ', '')}`);
-
-        // Backend Update
         const success = await DataService.updateProductStatusAsync(id, newStatus);
-
-        if (!success) {
-            alert("Hubo un problema al guardar el estado.");
-        }
+        if (!success) alert("Hubo un problema al guardar el estado.");
     },
 
     updateOrderStatus: async (id, status) => {
@@ -292,11 +317,6 @@ window.admin = {
     }
 };
 
-// Initialize only once on load
 document.addEventListener('DOMContentLoaded', () => {
-    if (window.admin && typeof window.admin.init === 'function') {
-        window.admin.init();
-    } else {
-        console.error("Critical: window.admin is not defined!");
-    }
+    if (window.admin) window.admin.init();
 });
